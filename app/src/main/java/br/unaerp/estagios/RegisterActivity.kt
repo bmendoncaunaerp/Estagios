@@ -38,3 +38,11 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 }
+
+
+// como salvar nome do usuário
+//        auth.currentUser?.updateProfile(
+//            UserProfileChangeRequest.Builder()
+//                .setDisplayName("Bruno")
+//                .build()
+//        )

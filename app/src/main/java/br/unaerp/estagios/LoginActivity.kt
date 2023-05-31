@@ -7,6 +7,7 @@ import android.text.InputType
 import android.widget.Toast
 import br.unaerp.estagios.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -44,6 +45,19 @@ class LoginActivity : AppCompatActivity() {
             // navega pra tela de cadastro
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.btnForgot.setOnClickListener {
+            auth.sendPasswordResetEmail(binding.edtEmail.text.toString()).addOnCompleteListener {
+                if(it.isSuccessful) {
+                    // veja seu email
+                } else {
+                    if(it.exception is FirebaseAuthEmailException) {
+                        // email invalido
+                    }
+                    // ocorreu um erro
+                }
+            }
         }
     }
 }
