@@ -6,9 +6,11 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import br.unaerp.estagios.databinding.TaskItemBinding
 
-class TaskListAdapter: Adapter<TaskListAdapter.TaskViewHolder>() {
-    private val taskList: MutableList<String> = mutableListOf()
-    fun updateList(newTaskList: List<String>) {
+class TaskListAdapter(
+    private val onItemClickListener: (Task) -> Unit
+): Adapter<TaskListAdapter.TaskViewHolder>() {
+    private val taskList: MutableList<Task> = mutableListOf()
+    fun updateList(newTaskList: List<Task>) {
         taskList.clear()
         taskList.addAll(newTaskList)
         notifyDataSetChanged()
@@ -28,8 +30,12 @@ class TaskListAdapter: Adapter<TaskListAdapter.TaskViewHolder>() {
     }
 
     inner class TaskViewHolder(private val binding: TaskItemBinding) : ViewHolder(binding.root) {
-        fun bind(task: String) {
-            binding.cbTask.text = task
+        fun bind(task: Task) {
+            binding.cbTask.text = task.description
+            binding.cbTask.isChecked = task.done
+            binding.cbTask.setOnClickListener {
+                onItemClickListener(task)
+            }
         }
     }
 }

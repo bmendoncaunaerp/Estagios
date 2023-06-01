@@ -20,17 +20,27 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val taskAdapter = TaskListAdapter()
+        val taskAdapter = TaskListAdapter { task ->
+            db.collection("tasks")
+                .document(task.id)
+                .delete()
+        }
         binding.rvTasks.adapter = taskAdapter
         binding.rvTasks.layoutManager = LinearLayoutManager(this)
 
         db.collection("tasks")
+            .whereEqualTo("done", false)
+            .orderBy("description")
             .addSnapshotListener { value, error ->
-                if(value != null){
+                if (value != null) {
                     Toast.makeText(this, "Vc tem ${value.size()} tasks", Toast.LENGTH_LONG).show()
                     val firebaseResult = value
-                    val taskList: List<String> = firebaseResult.map { document ->
-                        document.getString("description") ?: ""
+                    val taskList: List<Task> = firebaseResult.map { document ->
+                        Task(
+                            document.id,
+                            document.getString("description") ?: "",
+                            document.getBoolean("done") ?: false
+                        )
                     }
                     taskAdapter.updateList(taskList)
                 } else {
@@ -45,7 +55,7 @@ class HomeActivity : AppCompatActivity() {
                     "done" to false
                 )
             ).addOnCompleteListener {
-                if(it.isSuccessful) {
+                if (it.isSuccessful) {
                     Toast.makeText(this, "Sucesso", Toast.LENGTH_LONG).show()
                 } else {
                     Toast.makeText(this, "Falha", Toast.LENGTH_LONG).show()
